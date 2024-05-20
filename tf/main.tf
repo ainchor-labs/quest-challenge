@@ -10,5 +10,10 @@ terraform {
 
 # Configure the AWS provider
 provider "aws" {
-  region = "us-west-2"  # Replace with your desired AWS region
+  region           = "us-east-1"  # Replace with your desired AWS region
+  backend "s3" {
+    bucket         = "quest-challenge-tfstate"
+    key            = "terraform.tfstate"
+    encrypt        = true
+  }
 }
