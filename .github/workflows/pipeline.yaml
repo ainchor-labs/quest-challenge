@@ -24,12 +24,15 @@ jobs:
       uses: hashicorp/setup-terraform@v1
 
     - name: Terraform Init
+      working-directory: ./tf
       run: terraform init
 
     - name: Terraform Plan
+      working-directory: ./tf
       run: terraform plan
 
     - name: Terraform Apply
+      working-directory: ./tf
       run: terraform apply -auto-approve
 
   build-docker:
