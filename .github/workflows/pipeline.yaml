@@ -65,8 +65,8 @@ jobs:
       with:
         context: .
         push: true
-        tags: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/quest-challenge:${{ steps.vars.outputs.short_sha }}
+        tags: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/quest-challenge:${{ steps.shorten_sha.outputs.short_sha }}
     
     - name: Verify Docker image
-      run: docker images ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/quest-challenge:${{ steps.vars.outputs.short_sha }}
+      run: docker images ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/quest-challenge:${{ steps.shorten_sha.outputs.short_sha }}
 
