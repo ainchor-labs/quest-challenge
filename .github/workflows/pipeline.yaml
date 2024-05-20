@@ -1,0 +1,62 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+
+    - name: Terraform Init
+      run: terraform init
+
+    - name: Terraform Plan
+      run: terraform plan
+
+    - name: Terraform Apply
+      run: terraform apply -auto-approve
+
+  build-docker:
+    needs: [ terraform ]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Get short commit SHA
+      id: shorten_sha
+      run: echo "::set-output name=short_sha::${GITHUB_SHA::7}"
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Log in to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        push: true
+        tags: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/quest-challenge:${{ steps.vars.outputs.short_sha }}
+    
+    - name: Verify Docker image
+      run: docker images ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/quest-challenge:${{ steps.vars.outputs.short_sha }}
+
