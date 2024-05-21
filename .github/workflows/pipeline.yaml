@@ -12,6 +12,10 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
+    
+    - name: Get short commit SHA
+      id: shorten_sha
+      run: echo "::set-output name=short_sha::${GITHUB_SHA::7}"
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
@@ -29,11 +33,14 @@ jobs:
 
     - name: Terraform Plan
       working-directory: ./tf
-      run: terraform plan
+      run: terraform plan -var "port=3000" \
+                          -var "commit_sha=${{ steps.shorten_sha.outputs.short_sha }}"
+
 
     - name: Terraform Apply
       working-directory: ./tf
-      run: terraform apply -auto-approve
+      run: terraform apply -auto-approve -var "port=3000" \
+                                         -var "commit_sha=${{ steps.shorten_sha.outputs.short_sha }}"
 
   build-docker:
     needs: [ terraform ]
