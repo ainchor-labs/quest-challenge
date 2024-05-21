@@ -24,7 +24,7 @@ resource "aws_lb_target_group" "main_lb_target_group" {
 
 resource "aws_lb_listener" "main_lb_listener" {
   load_balancer_arn = aws_lb.main_load_balancer.arn
-  port              = "80"
+  port              = "${var.port}"
   protocol          = "HTTP"
 
   default_action {
