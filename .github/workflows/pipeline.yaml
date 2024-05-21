@@ -28,17 +28,14 @@ jobs:
       uses: hashicorp/setup-terraform@v1
 
     - name: Terraform Init
-      working-directory: ./tf
       run: terraform init
 
     - name: Terraform Plan
-      working-directory: ./tf
-      run: terraform plan -var "port=3000" -var "commit_sha=${{ steps.shorten_sha.outputs.short_sha }}"
+      run: terraform -chdir=tf plan -var "port=3000" -var "commit_sha=${{ steps.shorten_sha.outputs.short_sha }}"
 
 
     - name: Terraform Apply
-      working-directory: ./tf
-      run: terraform apply -auto-approve -var "port=3000" -var "commit_sha=${{ steps.shorten_sha.outputs.short_sha }}"
+      run: terraform -chdir=tf apply -auto-approve -var "port=3000" -var "commit_sha=${{ steps.shorten_sha.outputs.short_sha }}"
 
   build-docker:
     needs: [ terraform ]
