@@ -33,14 +33,12 @@ jobs:
 
     - name: Terraform Plan
       working-directory: ./tf
-      run: terraform plan -var "port=3000" \
-                          -var "commit_sha=${{ steps.shorten_sha.outputs.short_sha }}"
+      run: terraform plan -var "port=3000" -var "commit_sha=${{ steps.shorten_sha.outputs.short_sha }}"
 
 
     - name: Terraform Apply
       working-directory: ./tf
-      run: terraform apply -auto-approve -var "port=3000" \
-                                         -var "commit_sha=${{ steps.shorten_sha.outputs.short_sha }}"
+      run: terraform apply -auto-approve -var "port=3000" -var "commit_sha=${{ steps.shorten_sha.outputs.short_sha }}"
 
   build-docker:
     needs: [ terraform ]
